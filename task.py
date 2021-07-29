@@ -35,7 +35,7 @@ def getArgv():
     '''
     argv_len=len(sys.argv)
     if argv_len==1:
-        print("Please enter arguments")
+        print("Error: No arguments")
         sys.exit()
     argv = sys.argv[1:]
     argv_len-=1
