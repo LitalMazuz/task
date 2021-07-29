@@ -7,7 +7,6 @@ import sys
 import threading
 import paramiko
 
-lock = threading.Lock()
 
 def connectHostnameAndPrint(hostname, rootDir): 
     '''
@@ -16,13 +15,15 @@ def connectHostnameAndPrint(hostname, rootDir):
     hostname : TYPE: string, DESCRIPTION: the “remote” hostname
     rootDir : TYPE: string, DESCRIPTION: root directory name.
     '''
-    with lock:
-        client.connect(hostname)   
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname)
     stdin, stdout, stderr = client.exec_command('ls '+rootDir) #prints the sub folders & files for the requested directory.
     lines = stdout.readlines()
     lines=[(r.split('\n')[0]) for r in lines]
     print('thread ID: '+ str(threading.get_ident()) +' - '+str(lines))
-        
+    client.close()    
+
         
 def getArgv():
     '''
@@ -30,7 +31,7 @@ def getArgv():
     -------
     hostnames : TYPE: dictionary, DESCRIPTION: list of the “remote” hostname   
     root_dir : TYPE: dictionary, DESCRIPTION: list of the root directory 
-    argv_len : TYPE: int, DESCRIPTION: number of parameters (less than 1 - file name)
+    argv_len : TYPE: int, DESCRIPTION: number of parameters (less 1 - the file name)
     '''
     argv_len=len(sys.argv)
     if argv_len==1:
@@ -50,10 +51,6 @@ def getArgv():
 if __name__ == "__main__":
     hostname,root_dir,arg_len=getArgv()
     threads=list()
-    client = paramiko.SSHClient()
-    client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
- 
     for i in range(0,arg_len):
         thread=threading.Thread(target=connectHostnameAndPrint,args=(hostname[i],root_dir[i]))
         threads.append(thread) 
@@ -65,7 +62,7 @@ if __name__ == "__main__":
     for j in threads:
         j.join()
       
-    client.close()
+    
     
     
     
