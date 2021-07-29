@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 @author: lital mazuz
 """
-
 import sys
 import threading
 import paramiko
-
 
 def connectHostnameAndPrint(hostname, rootDir): 
     '''
@@ -23,7 +20,7 @@ def connectHostnameAndPrint(hostname, rootDir):
     lines=[(r.split('\n')[0]) for r in lines]
     print('thread ID: '+ str(threading.get_ident()) +' - '+str(lines))
     client.close()    
-
+     
         
 def getArgv():
     '''
